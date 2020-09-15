@@ -26,7 +26,7 @@ def angreal_cmd(open):
 
     root_dir = os.path.join(HERE, "..", "tests")
 
-    test_dir = os.path.join(HERE, "..", "tests", "integration")
+    test_dir = os.path.join(HERE, "..", "tests", "unit")
 
     if open:
 
