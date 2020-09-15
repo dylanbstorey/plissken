@@ -1,27 +1,35 @@
 import os
-
+import subprocess
 
 import angreal
-from angreal import VirtualEnv, venv_required
+from angreal import VirtualEnv
 
+HERE = os.path.realpath(os.path.dirname(__file__))
 
-here = os.path.dirname(__file__)
-requirements = os.path.join(here, '..', 'requirements', 'requirements.txt')
-requirements_dev = os.path.join(here, '..', 'requirements', 'dev.txt')
+one_up = os.path.join(HERE, "..")
+
+environment_name = "plissken"
+
+setup_py_path = os.path.realpath(os.path.join(one_up, "project_name"))
 
 
 @angreal.command()
-@angreal.option('--no_dev', is_flag=True, help='Do not setup a dev environment.')
-@venv_required('plissken')
-def angreal_cmd(no_dev):
+def angreal_cmd():
     """
-    update/create the plissken environment.
+    setup a development environment from scratch
     """
-    # create our virtual environment and activate it for the rest of this run.
-    reqs = requirements_dev
-    if no_dev:
-        reqs = requirements
+    angreal.warn(f"Virtual environment {environment_name} being created.")
 
-    VirtualEnv(name='plissken', python='python3', requirements=reqs)
-    angreal.win('Virtual environment {} updated.'.format('plissken'))
-    return
+    venv = VirtualEnv(name=environment_name, python="python3")
+    venv._activate()
+    angreal.win(f"Virtual environment {environment_name} created")
+
+    # install dependencies
+    subprocess.run("pip install -e .[dev]", shell=True, cwd=one_up)
+
+    # initialize hooks
+    subprocess.run("pre-commit install", shell=True, cwd=one_up)
+
+    angreal.win(f"{environment_name} successfully setup !")
+
+    pass
