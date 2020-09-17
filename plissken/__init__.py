@@ -120,6 +120,7 @@ def _generate_decorators(
 ) -> list:
     decorators = []
     for decorator in node_list:
+
         assert isinstance(decorator, redbaron.nodes.DecoratorNode)
         call_arguments = []
         for call in decorator.call:

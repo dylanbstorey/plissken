@@ -32,6 +32,25 @@ def get_rb():
 
 
 @pytest.fixture()
+def rb_functions():
+    rv = []
+    rb = plissken.code2red(test_files[0])
+    rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
+    return rv
+
+
+@pytest.fixture()
+def rb_decorated_functions():
+    """ get a list of decorated functions"""
+    rv = []
+    rb = plissken.code2red(test_files[0])
+
+    rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
+    rv = [node.decorators for node in rv if node.decorators]
+    return rv
+
+
+@pytest.fixture()
 def rb_variables():
 
     rv = []

@@ -1,4 +1,9 @@
+import os
+
+from redbaron import RedBaron
+
 import plissken
+from plissken import VariableDoc, _generate_decorators, code2red
 
 
 def test_version():
@@ -57,13 +62,6 @@ def test_module_to_fqdn(directories):
     assert r_outputs == outputs
 
 
-import os
-
-from redbaron import RedBaron
-
-from plissken import VariableDoc, code2red
-
-
 def test_code2red(test_code_file):
     """ test code to red baron"""
 
@@ -80,3 +78,12 @@ def test_variable_doc(rb_variables):
         assert isinstance(doc_obj.docstring, str)
         assert isinstance(doc_obj.name, str)
         assert isinstance(doc_obj.type, str)
+
+
+def test_decorator_generator(rb_decorated_functions):
+    """ test ability to parse decorators """
+
+    for decorated_function in rb_decorated_functions:
+        decorator = _generate_decorators(decorated_function)
+        for d in decorator:
+            assert isinstance(d, plissken.DecoratorDocument)

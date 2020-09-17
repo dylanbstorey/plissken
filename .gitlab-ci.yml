@@ -19,16 +19,6 @@ unit-test-py3:
   except:
     - tags
 
-unit-test-py2:
-  image: python:2
-  stage: unit-test
-  script:
-    - angreal tests
-  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
-  except:
-    - tags
-  allow_failure: true
-
 pages:
   image: python:3
   stage: pages
