@@ -6,7 +6,7 @@ import setuptools
 VERSION = open(os.path.join("plissken", "VERSION")).read().strip()
 
 
-requirements = ["click>7.0.0", "colander==1.7.0"]
+requirements = ["click>7.0.0", "colander==1.7.0", "redbaron>=0.9.2"]
 
 dev_requirements = [
     "pytest==3.8.0",

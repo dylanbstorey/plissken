@@ -2,6 +2,9 @@ import os
 import shutil
 
 import pytest
+import redbaron
+
+import plissken
 
 
 def pytest_itemcollected(item):
@@ -12,6 +15,41 @@ def pytest_itemcollected(item):
     """
     if item._obj.__doc__:
         item._nodeid = item.obj.__doc__.strip()
+
+
+HERE = os.path.dirname(__file__)
+test_files = [os.path.join(HERE, "unit", "artifact", "example_google.py")]
+
+
+@pytest.fixture()
+def test_code_file():
+    return test_files[0]
+
+
+@pytest.fixture()
+def get_rb():
+    return plissken.code_parser.code2red(test_files[0])
+
+
+@pytest.fixture()
+def rb_variables():
+
+    rv = []
+    rb = plissken.code_parser.code2red(test_files[0])
+
+    for ix, node in enumerate(rb):
+        if isinstance(
+            rb[ix],
+            (
+                redbaron.nodes.StandaloneAnnotationNode,
+                redbaron.nodes.AssignmentNode,
+                redbaron.nodes.NameNode,
+            ),
+        ):
+            if isinstance(rb[ix + 1], redbaron.nodes.StringNode):
+                rv.append((rb[ix], rb[ix + 1]))
+
+    return rv
 
 
 @pytest.fixture
