@@ -74,8 +74,76 @@ def ModuleDoc(file: str):
 
 
 def ClassDoc(node: redbaron.nodes.ClassNode):
-    raise NotImplemented()
+
+    name = node.name
+
+    doc_string = ""
+    if isinstance(node[0], redbaron.nodes.StringNode):
+        doc_string = node[0]
+
+    methods = [FunctionDoc(n) for n in node if isinstance(n, redbaron.nodes.DefNode)]
+
+    init_method = get_init(methods)
+    dunder_methods = [n for n in methods if method_is_dunder(n.name)]
+    semi_private_methods = [n for n in methods if method_is_semi_private(n.name)]
+    private_methods = [n for n in methods if method_is_private(n.name)]
+    class_methods = [n for n in methods if method_is_class_method(n.name)]
+    class_attributes = [VariableDoc(x[0], x[1]) for x in get_documented_variables(node)]
+
+
+def get_init(methods):
+    init = [n for n in methods if method_is_init(n.name)]
+    if len(init) > 1:
+        raise ValueError("only one __init__ method allowed")
+
+    rv_init = None
+    if init:
+        rv_init = init.pop()
+
+    return rv_init
+
+
+def get_documented_variables(node):
+    rv = []
+    for ix, n in enumerate(node):
+        if isinstance(
+            node[ix],
+            (
+                redbaron.nodes.StandaloneAnnotationNode,
+                redbaron.nodes.AssignmentNode,
+                redbaron.nodes.NameNode,
+            ),
+        ):
+            if isinstance(node[ix + 1], redbaron.nodes.StringNode):
+                rv.append((node[ix], node[ix + 1]))
+    return rv
+
     # return ClassDocument()
+
+
+def method_is_init(name):
+    return name == "__init__"
+
+
+def method_is_semi_private(name):
+    return name.startswith("_") and not name.startswith("__")
+
+
+def method_is_private(name):
+    return name.startswith("_") and not name.endswith("__")
+
+
+def method_is_dunder(name):
+    return name.startswith("__") and name.endswith("__") and name is not "__init__"
+
+
+def method_is_class_method(name):
+    return (
+        not method_is_init(name)
+        and not method_is_semi_private(name)
+        and not method_is_private(name)
+        and not method_is_dunder(name)
+    )
 
 
 def FunctionDoc(node: redbaron.nodes.DefNode) -> FunctionDocument:
@@ -86,12 +154,16 @@ def FunctionDoc(node: redbaron.nodes.DefNode) -> FunctionDocument:
     if isinstance(node[0], redbaron.nodes.StringNode):
         doc_string = node[0]
 
+    decorators = []
+    if node.decorators:
+        decorators = _generate_decorators(node.decorators)
+
     return FunctionDocument(
         name=node.name,
         async_=node.async_ or False,
         arguments=_generate_arguments(node.arguments),
         docstring=is_docstring(doc_string),
-        decorators=_generate_decorators(node.decorators),
+        decorators=decorators,
         code=node.dumps(),
     )
 
@@ -103,18 +175,20 @@ def _generate_decorators(
     for decorator in node_list:
 
         assert isinstance(decorator, redbaron.nodes.DecoratorNode)
+
         call_arguments = []
-        for call in decorator.call:
-            name = call.value.value
+        if decorator.call:
+            for call in decorator.call:
+                name = call.value.value
 
-            value = ""
-            if call.target:
-                value = call.target.value
+                value = ""
+                if call.target:
+                    value = call.target.value
 
-            annotation = ""
-            call_arguments.append(
-                ArgumentDocument(name=name, default=value, annotation=annotation)
-            )
+                annotation = ""
+                call_arguments.append(
+                    ArgumentDocument(name=name, default=value, annotation=annotation)
+                )
 
         name_list = decorator.value.value
         decorator_name = "@" + ".".join(

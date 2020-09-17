@@ -200,6 +200,9 @@ class ExampleClass(object):
 
     """
 
+    documented_class_attribute
+    """ this is a documented attribute """
+
     def __init__(self, param1, param2, param3):
         """Example of docstring on the __init__ method.
 
