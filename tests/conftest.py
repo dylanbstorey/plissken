@@ -28,14 +28,14 @@ def test_code_file():
 
 @pytest.fixture()
 def get_rb():
-    return plissken.code_parser.code2red(test_files[0])
+    return plissken.code2red(test_files[0])
 
 
 @pytest.fixture()
 def rb_variables():
 
     rv = []
-    rb = plissken.code_parser.code2red(test_files[0])
+    rb = plissken.code2red(test_files[0])
 
     for ix, node in enumerate(rb):
         if isinstance(
