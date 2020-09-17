@@ -3,7 +3,13 @@ import os
 from redbaron import RedBaron
 
 import plissken
-from plissken import VariableDoc, _generate_decorators, code2red
+from plissken import (
+    FunctionDoc,
+    VariableDoc,
+    _generate_arguments,
+    _generate_decorators,
+    code2red,
+)
 
 
 def test_version():
@@ -75,9 +81,10 @@ def test_variable_doc(rb_variables):
     for node in rb_variables:
 
         doc_obj = VariableDoc(node[0], node[1])
+        assert isinstance(doc_obj, plissken.VariableDocument)
         assert isinstance(doc_obj.docstring, str)
         assert isinstance(doc_obj.name, str)
-        assert isinstance(doc_obj.type, str)
+        assert isinstance(doc_obj.annotation, str)
 
 
 def test_decorator_generator(rb_decorated_functions):
@@ -87,3 +94,20 @@ def test_decorator_generator(rb_decorated_functions):
         decorator = _generate_decorators(decorated_function)
         for d in decorator:
             assert isinstance(d, plissken.DecoratorDocument)
+
+
+def test_function_argument_generator(rb_functions_with_args):
+    """ test ability to parse functions """
+
+    for function in rb_functions_with_args:
+        arguments = _generate_arguments(function)
+        for argument in arguments:
+            assert isinstance(argument, plissken.ArgumentDocument)
+
+
+def test_function_doc(rb_functions):
+    """ test function doc generation """
+
+    for function in rb_functions:
+        function = FunctionDoc(function)
+        assert isinstance(function, plissken.FunctionDocument)

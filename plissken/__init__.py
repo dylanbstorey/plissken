@@ -1,11 +1,23 @@
-"""plissken
-"""
 import os
 import typing
+from collections import namedtuple
+
+import redbaron
+from redbaron import RedBaron
 
 __version__ = (
     open(os.path.join(os.path.dirname(__file__), "VERSION"), "r").read().strip()
 )
+
+
+# Documents are just named tuples with data in them
+ArgumentDocument = namedtuple("ArgumentDocument", ["name", "default", "annotation"])
+DecoratorDocument = namedtuple("DecoratorDocument", ["name", "arguments"])
+FunctionDocument = namedtuple(
+    "FunctionDocument",
+    ["name", "async_", "arguments", "docstring", "decorators", "code"],
+)
+VariableDocument = namedtuple("VariableDocument", ["name", "annotation", "docstring"])
 
 
 def split_all(path):
@@ -45,74 +57,43 @@ def module_to_fqdns(
     return paths, fqdns, outputs
 
 
-import os
-import typing
-from collections import namedtuple
-
-import redbaron
-from redbaron import RedBaron
-
-FunctionArgument = namedtuple("FunctionArgument", ["name", "default", "annotation"])
-DecoratorDocument = namedtuple("DecoratorDocument", ["name", "arguments"])
-
-
 def code2red(filename: str) -> RedBaron:
     with open(filename) as sc:
         red = RedBaron(sc.read())
     return red
 
 
-class PackageDoc(object):
-    """
-    Package A package is a collection of modules.
-    """
-
-    def __init__(self, path: str):
-        self.path = path
-        self.name = os.path.basename(path)
-        self.modules = []
+def PackageDoc(directory: str):
+    raise NotImplemented()
+    return PackageDocument()
 
 
-class ModuleDoc(object):
-    """
-    Module A module is a python file within a namespace.
-
-    """
-
-    def __init__(self, path: str):
-        self.module = path
-        self.module_doc = ""
-        self.module_import_path
-        self.classes = []
-        self.functions = []
-        self.variables = []
-        pass
+def ModuleDoc(file: str):
+    raise NotImplemented()
+    # return ModuleDocument()
 
 
-class ClassDoc(object):
-    """
-    Class A  class is a type of python construct within a Module
-    """
-
-    def __init__(self, node: redbaron.nodes.ClassNode):
-        self.methods = []
-        self.variables = []
-        self.code
-        pass
+def ClassDoc(node: redbaron.nodes.ClassNode):
+    raise NotImplemented()
+    # return ClassDocument()
 
 
-class FunctionDoc(object):
+def FunctionDoc(node: redbaron.nodes.DefNode) -> FunctionDocument:
     """
     A Function is a type of python construct within a Module.
     """
+    doc_string = ""
+    if isinstance(node[0], redbaron.nodes.StringNode):
+        doc_string = node[0]
 
-    def __init__(self, node: redbaron.nodes.DefNode):
-        self.name = node.name
-        self.async_ = node.async_ or False
-        self.arguments = _generate_arguments(node.arguments)
-        self.doc_string = is_docstring(node[0])
-        self.decorators = _generate_decorators()
-        self.code = node.dumps()
+    return FunctionDocument(
+        name=node.name,
+        async_=node.async_ or False,
+        arguments=_generate_arguments(node.arguments),
+        docstring=is_docstring(doc_string),
+        decorators=_generate_decorators(node.decorators),
+        code=node.dumps(),
+    )
 
 
 def _generate_decorators(
@@ -132,7 +113,7 @@ def _generate_decorators(
 
             annotation = ""
             call_arguments.append(
-                FunctionArgument(name=name, default=value, annotation=annotation)
+                ArgumentDocument(name=name, default=value, annotation=annotation)
             )
 
         name_list = decorator.value.value
@@ -153,74 +134,71 @@ def _generate_arguments(node_list: redbaron.base_nodes.CommaProxyList) -> list:
 
             name = arg.target.value
             default = ""
+            annotation = ""
             if arg.value:
-                default = arg.value.value or ""
+                default = arg.value.value
             if arg.annotation:
                 annotation = arg.annotation.value
             args.append(
-                FunctionArgument(name=name, default=default, annotation=annotation)
+                ArgumentDocument(name=name, default=default, annotation=annotation)
             )
 
         if isinstance(arg, redbaron.nodes.ListArgumentNode):
             args.append(
-                FunctionArgument(name=f"*{arg.value.value}", default="", annotation="")
+                ArgumentDocument(name=f"*{arg.value.value}", default="", annotation="")
             )
 
         if isinstance(arg, redbaron.nodes.DictArgumentNode):
             args.append(
-                FunctionArgument(name=f"**{arg.value.value}", default="", annotation="")
+                ArgumentDocument(name=f"**{arg.value.value}", default="", annotation="")
             )
 
     return args
 
 
-class VariableDoc(object):
-    """
-    A Variable is a variable, it may or may not be assigned a value
-    """
+def VariableDoc(
+    node: typing.Union[
+        redbaron.nodes.NameNode,
+        redbaron.nodes.AssignmentNode,
+        redbaron.nodes.StandaloneAnnotationNode,
+    ],
+    doc: redbaron.nodes.StringNode,
+):
 
-    def __init__(
-        self,
-        node: typing.Union[
-            redbaron.nodes.NameNode,
-            redbaron.nodes.AssignmentNode,
-            redbaron.nodes.StandaloneAnnotationNode,
-        ],
-        doc: redbaron.nodes.StringNode,
-    ):
-        self.name = None
-        self.type = None
-        self.docstring = None
+    name = ""
+    annotation = ""
+    docstring = ""
 
-        if isinstance(node, redbaron.nodes.NameNode):
-            self.name = node.value
-            try:
-                self.type = node.annotation.value
-            except:
-                self.type = ""
+    if isinstance(node, redbaron.nodes.NameNode):
+        name = node.value
+        try:
+            annotation = node.annotation.value
+        except:
+            annotation = ""
 
-        elif isinstance(node, redbaron.nodes.AssignmentNode):
-            self.name = node.target.value
-            try:
-                self.type = node.annotation.value
-            except:
-                self.type = ""
+    elif isinstance(node, redbaron.nodes.AssignmentNode):
+        name = node.target.value
+        try:
+            annotation = node.annotation.value
+        except:
+            annotation = ""
 
-        elif isinstance(node, redbaron.nodes.StandaloneAnnotationNode):
-            self.name = node.target.value
-            try:
-                self.type = node.annotation.value
-            except:
-                self.type = ""
-        else:
-            raise ValueError(Node)
+    elif isinstance(node, redbaron.nodes.StandaloneAnnotationNode):
+        name = node.target.value
+        try:
+            annotation = node.annotation.value
+        except:
+            annotation = ""
+    else:
+        raise ValueError(Node)
 
-        self.docstring = is_docstring(doc)
+    docstring = is_docstring(doc)
 
-        if not self.docstring:
-            raise ValueError(
-                f"The docstring for {self.name} doesn't appear valid. Got: {doc.value}"
-            )
+    if not docstring:
+        raise ValueError(
+            f"The docstring for {self.name} doesn't appear valid. Got: {doc.value}"
+        )
+    return VariableDocument(name=name, annotation=annotation, docstring=docstring)
 
 
 def is_docstring(string: typing.Union[redbaron.nodes.StringNode, str]) -> str:

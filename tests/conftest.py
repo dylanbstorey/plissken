@@ -51,6 +51,17 @@ def rb_decorated_functions():
 
 
 @pytest.fixture()
+def rb_functions_with_args():
+    """ get a list of functions with args"""
+    rv = []
+    rb = plissken.code2red(test_files[0])
+
+    rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
+    rv = [node.arguments for node in rv if node.arguments]
+    return rv
+
+
+@pytest.fixture()
 def rb_variables():
 
     rv = []
