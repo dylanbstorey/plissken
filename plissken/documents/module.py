@@ -11,7 +11,8 @@ from plissken.documents.variable import VariableDoc
 from plissken.file_operators import code2red
 
 ModuleDocument = namedtuple(
-    "ModuleDocument", ["name", "docstring", "variables", "classes", "functions"]
+    "ModuleDocument",
+    ["name", "docstring", "variables", "classes", "functions", "export_file_path"],
 )
 
 
@@ -67,6 +68,7 @@ def ModuleDoc(file: str, package_root=None):
     if package_root:
         file = trim_prefix(file, package_root)
 
+    export_file_path = os.path.splitext(file)[0]
     name = get_qualified_name_from_path(file)
 
     docstring = ""
@@ -84,4 +86,5 @@ def ModuleDoc(file: str, package_root=None):
         variables=variables,
         classes=classes,
         functions=functions,
+        export_file_path=export_file_path,
     )

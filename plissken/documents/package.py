@@ -13,6 +13,7 @@ PackageDocument = namedtuple(
         "functions",
         "sub_packages",
         "modules",
+        "export_file_path",
     ],
 )
 
@@ -50,6 +51,7 @@ def PackageDoc(directory: str, package_root=None):
     variables = package_doc.variables
     classes = package_doc.classes
     functions = package_doc.functions
+    export_file_path = package_doc.export_file_path.replace("__init__", "index")
 
     return PackageDocument(
         name=name,
@@ -59,4 +61,5 @@ def PackageDoc(directory: str, package_root=None):
         functions=functions,
         sub_packages=sub_packages,
         modules=modules,
+        export_file_path=export_file_path,
     )
