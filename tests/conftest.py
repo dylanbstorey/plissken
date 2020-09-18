@@ -5,6 +5,7 @@ import pytest
 import redbaron
 
 import plissken
+import plissken.file_operators
 
 
 def pytest_itemcollected(item):
@@ -20,6 +21,13 @@ def pytest_itemcollected(item):
 HERE = os.path.dirname(__file__)
 test_files = [os.path.join(HERE, "unit", "artifact", "example_google.py")]
 
+test_package = os.path.join(HERE, "unit", "artifact", "package")
+
+
+@pytest.fixture()
+def test_package_dir():
+    return test_package
+
 
 @pytest.fixture()
 def test_code_file():
@@ -28,13 +36,13 @@ def test_code_file():
 
 @pytest.fixture()
 def get_rb():
-    return plissken.code2red(test_files[0])
+    return plissken.file_operators.code2red(test_files[0])
 
 
 @pytest.fixture()
 def rb_functions():
     rv = []
-    rb = plissken.code2red(test_files[0])
+    rb = plissken.file_operators.code2red(test_files[0])
     rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
     return rv
 
@@ -43,7 +51,7 @@ def rb_functions():
 def rb_decorated_functions():
     """ get a list of decorated functions"""
     rv = []
-    rb = plissken.code2red(test_files[0])
+    rb = plissken.file_operators.code2red(test_files[0])
 
     rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
     rv = [node.decorators for node in rv if node.decorators]
@@ -54,7 +62,7 @@ def rb_decorated_functions():
 def rb_functions_with_args():
     """ get a list of functions with args"""
     rv = []
-    rb = plissken.code2red(test_files[0])
+    rb = plissken.file_operators.code2red(test_files[0])
 
     rv = [node for node in rb if isinstance(node, redbaron.nodes.DefNode)]
     rv = [node.arguments for node in rv if node.arguments]
@@ -62,10 +70,20 @@ def rb_functions_with_args():
 
 
 @pytest.fixture()
+def rb_classes():
+    """ get a list of functions with args"""
+    rv = []
+    rb = plissken.file_operators.code2red(test_files[0])
+
+    rv = [node for node in rb if isinstance(node, redbaron.nodes.ClassNode)]
+    return rv
+
+
+@pytest.fixture()
 def rb_variables():
 
     rv = []
-    rb = plissken.code2red(test_files[0])
+    rb = plissken.file_operators.code2red(test_files[0])
 
     for ix, node in enumerate(rb):
         if isinstance(
