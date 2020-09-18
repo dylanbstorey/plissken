@@ -17,18 +17,23 @@ PackageDocument = namedtuple(
 )
 
 
-def PackageDoc(directory: str):
-
-    init_py_path = os.path.join(directory, "__init__.py")
+def PackageDoc(directory: str, package_root=None):
 
     sub_packages = []
     modules = []
+
+    if package_root is None:
+        package_root = os.path.basename(directory)
+
+    init_py_path = os.path.join(directory, "__init__.py")
 
     for root, dirs, filenames in os.walk(directory):
         for f in filenames:
             if f == "__init__.py":
                 if root == directory:
-                    package_doc = ModuleDoc(os.path.join(root, f))
+                    package_doc = ModuleDoc(
+                        os.path.join(root, f), package_root=package_root
+                    )
             elif f.endswith(".py") and f is not "__init__.py":
                 modules.append(os.path.join(root, f))
 
@@ -38,8 +43,8 @@ def PackageDoc(directory: str):
 
         break
 
-    sub_packages = [PackageDoc(n) for n in sub_packages]
-    modules = [ModuleDoc(n) for n in modules]
+    sub_packages = [PackageDoc(n, package_root=package_root) for n in sub_packages]
+    modules = [ModuleDoc(n, package_root=package_root) for n in modules]
     name = package_doc.name
     docstring = package_doc.docstring
     variables = package_doc.variables

@@ -1,3 +1,5 @@
+import os
+
 import plissken
 import plissken.documents.package
 from plissken.documents.function import (
@@ -5,8 +7,9 @@ from plissken.documents.function import (
     _generate_arguments,
     _generate_decorators,
 )
+from plissken.documents.helpers import prettyDoc
 from plissken.documents.klass import ClassDoc
-from plissken.documents.module import ModuleDoc
+from plissken.documents.module import ModuleDoc, split_all, trim_prefix
 from plissken.documents.package import PackageDoc
 from plissken.documents.variable import VariableDoc
 
@@ -64,3 +67,17 @@ def test_module_doc(test_code_file):
 def test_package_doc(test_package_dir):
     package = PackageDoc(test_package_dir)
     assert isinstance(package, plissken.documents.package.PackageDocument)
+
+
+def test_trim_prefix():
+    path = "/Users/dstorey/Desktop/plissken/tests/unit/artifact/package/sub_package"
+    root = "package"
+
+    assert trim_prefix(path, root) == os.path.join(*["package", "sub_package"])
+
+
+def test_pretty_docs(test_package_dir):
+    import json
+
+    doc = prettyDoc(PackageDoc(test_package_dir))
+    print(json.dumps(doc, indent=4))
