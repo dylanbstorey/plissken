@@ -15,7 +15,7 @@ def prettyDoc(document: namedtuple) -> str:
             return False
         return all(type(n) == str for n in f)
 
-    rv = document._asdict()
+    rv = dict(document._asdict())
     for k, v in rv.items():
         if isnamedtupleinstance(v):
             rv[k] = prettyDoc(v)

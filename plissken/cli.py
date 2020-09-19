@@ -19,9 +19,15 @@ def main():
 
 
 @main.command()
-def subcommand():
+def generate():
     """
     This is a sub command on the main entry point group
     :return:
     """
+    # given directory
+    # given template + template dir
+    # given type (default markdown)
+    # parse to a single package object
+    #
+
     pass

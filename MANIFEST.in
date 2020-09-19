@@ -1,1 +1,2 @@
 include plissken/VERSION
+include plissken/templates/*

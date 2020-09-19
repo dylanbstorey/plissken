@@ -8,7 +8,15 @@ ArgumentDocument = namedtuple("ArgumentDocument", ["name", "default", "annotatio
 DecoratorDocument = namedtuple("DecoratorDocument", ["name", "arguments"])
 FunctionDocument = namedtuple(
     "FunctionDocument",
-    ["name", "async_", "arguments", "docstring", "decorators", "code"],
+    [
+        "name",
+        "async_",
+        "arguments",
+        "docstring",
+        "decorators",
+        "code",
+        "return_annotation",
+    ],
 )
 
 
@@ -30,6 +38,7 @@ def FunctionDoc(node: redbaron.nodes.DefNode) -> FunctionDocument:
         arguments=_generate_arguments(node.arguments),
         docstring=is_docstring(doc_string),
         decorators=decorators,
+        return_annotation=node.return_annotation,
         code=node.dumps(),
     )
 

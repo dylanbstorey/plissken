@@ -24,6 +24,7 @@ ClassDocument = namedtuple(
         "semi_private_methods",
         "private_methods",
         "class_methods",
+        "variables",
     ],
 )
 
@@ -45,6 +46,7 @@ def ClassDoc(node: redbaron.nodes.ClassNode):
     private_methods = [n for n in methods if method_is_private(n.name)]
     class_methods = [n for n in methods if method_is_class_method(n.name)]
     class_attributes = [VariableDoc(x[0], x[1]) for x in get_documented_variables(node)]
+    variables = [VariableDoc(n[0], n[1]) for n in get_documented_variables(node)]
 
     return ClassDocument(
         name=name,
@@ -54,4 +56,5 @@ def ClassDoc(node: redbaron.nodes.ClassNode):
         semi_private_methods=semi_private_methods,
         private_methods=private_methods,
         class_methods=class_methods,
+        variables=variables,
     )

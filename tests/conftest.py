@@ -25,6 +25,11 @@ test_package = os.path.join(HERE, "unit", "artifact", "package")
 
 
 @pytest.fixture()
+def template_dir():
+    return os.path.join(HERE, "unit", "artifact", "test_templates")
+
+
+@pytest.fixture()
 def test_package_dir():
     return test_package
 

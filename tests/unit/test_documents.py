@@ -81,3 +81,10 @@ def test_pretty_docs(test_package_dir):
 
     doc = prettyDoc(PackageDoc(test_package_dir))
     print(json.dumps(doc, indent=4))
+
+
+def test_pretty_docs(test_package_dir):
+    import pprint
+
+    doc = prettyDoc(PackageDoc(test_package_dir))
+    # print(pprint.pprint(doc))
