@@ -47,7 +47,7 @@ release-test:
     - echo 'password='$PYPI_PASSWORD >> ~/.pypirc
     - python setup.py check sdist bdist_wheel
     - twine upload --repository testpypi dist/*
-    - pip install --index-url https://test.pypi.org/simple/ angreal
+    - pip install --index-url https://test.pypi.org/simple/ plissken
     - echo "" > ~/.pypirc && rm ~/.pypirc
 
   allow_failure: true
@@ -58,7 +58,7 @@ release:
   image: python:3
   stage: release
   before_script:
-    - VERSION=`cat angreal/VERSION`
+    - VERSION=`cat plissken/VERSION`
     - if ! [[ "$CI_BUILD_TAG" = "$VERSION" ]]; then echo "$VERSION does not match $CI_BUILD_TAG"; exit -1 ; fi
   script:
     - pip install twine
