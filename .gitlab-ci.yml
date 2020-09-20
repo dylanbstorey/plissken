@@ -39,7 +39,7 @@ release:
     - VERSION=`cat plissken/VERSION`
     - if ! [[ "$CI_BUILD_TAG" = "$VERSION" ]]; then echo "$VERSION does not match $CI_BUILD_TAG"; exit -1 ; fi
   script:
-    - pip install -r requirements/dev.txt
+    - pip install .[dev]
     - echo "[server-login]" >> ~/.pypirc
     - echo "username="$PYPI_USER >> ~/.pypirc
     - echo "password="$PYPI_PASSWORD >> ~/.pypirc
