@@ -45,7 +45,6 @@ release-test:
     - echo 'repository=https://test.pypi.org/legacy/' >> ~/.pypirc
     - echo 'username='$PYPI_USER >> ~/.pypirc
     - echo 'password='$PYPI_PASSWORD >> ~/.pypirc
-    - cat ~/.pypirc
     - python setup.py check sdist bdist_wheel
     - twine upload --repository testpypi dist/*
     - pip install --index-url https://test.pypi.org/simple/ angreal
@@ -65,6 +64,7 @@ release:
     - pip install twine
     - pip install .[dev]
     - echo "[server-login]" >> ~/.pypirc
+    - echo "repository=https://pypi.python.org/pypi" >> ~/.pypirc
     - echo "username="$PYPI_USER >> ~/.pypirc
     - echo "password="$PYPI_PASSWORD >> ~/.pypirc
     - python setup.py check sdist bdist_wheel
