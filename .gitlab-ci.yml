@@ -45,10 +45,12 @@ release-test:
     - echo 'repository=https://test.pypi.org/legacy/' >> ~/.pypirc
     - echo 'username='$PYPI_USER >> ~/.pypirc
     - echo 'password='$PYPI_PASSWORD >> ~/.pypirc
+    - cat ~/.pypirc
     - python setup.py check sdist bdist_wheel
     - twine upload --repository testpypi dist/*
     - pip install --index-url https://test.pypi.org/simple/ angreal
     - echo "" > ~/.pypirc && rm ~/.pypirc
+
   allow_failure: true
   only:
     - tags
