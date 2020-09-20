@@ -15,9 +15,8 @@ def test_code2red(test_code_file):
 def test_render_template(test_package_dir):
 
     template = render_template(
-        "markdown.template", data=prettyDoc(PackageDoc(test_package_dir))
+        "md.template", data=prettyDoc(PackageDoc(test_package_dir))
     )
-    print(template)
     assert isinstance(template, str)
 
 
