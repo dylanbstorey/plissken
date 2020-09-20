@@ -9,6 +9,7 @@ VERSION = open(os.path.join("plissken", "VERSION")).read().strip()
 requirements = ["click>7.0.0", "colander==1.7.0", "redbaron>=0.9.2", "jinja2 >= 2"]
 
 dev_requirements = [
+    "future",
     "pytest==3.8.0",
     "pytest-cov==2.6.0",
     "sphinx==1.8.0",
