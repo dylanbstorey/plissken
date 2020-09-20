@@ -14,7 +14,7 @@ dev_requirements = [
     "sphinx==1.8.0",
     "sphinx-rtd-theme==0.4.1",
     "angreal>=0.7.0",
-    "mypy==0.660",
+    "mypy>=0.660",
     "lxml==4.3.0",
     "black==19.10b0",
     "pre-commit==2.2.0",
@@ -36,5 +36,5 @@ setuptools.setup(
     entry_points={"console_scripts": ["plissken=plissken.cli:main"]},
     python_requires=">=3",
     include_package_data=True,
-    extras_requires={"dev": dev_requirements},
+    extras_require={"dev": dev_requirements},
 )
