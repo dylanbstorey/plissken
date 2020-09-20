@@ -37,6 +37,7 @@ release-test:
   image: python:3
   stage: release
   script:
+    - pip install twine
     - echo "[distutils]" >> ~/.pypirc
     - echo "index-servers=" >> ~/.pypirc
     - echo "  testpypi" >> ~/.pypirc
@@ -59,6 +60,7 @@ release:
     - VERSION=`cat angreal/VERSION`
     - if ! [[ "$CI_BUILD_TAG" = "$VERSION" ]]; then echo "$VERSION does not match $CI_BUILD_TAG"; exit -1 ; fi
   script:
+    - pip install twine
     - pip install .[dev]
     - echo "[server-login]" >> ~/.pypirc
     - echo "username="$PYPI_USER >> ~/.pypirc
