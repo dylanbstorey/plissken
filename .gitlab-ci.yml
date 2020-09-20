@@ -68,7 +68,7 @@ release:
     - echo "username="$PYPI_USER >> ~/.pypirc
     - echo "password="$PYPI_PASSWORD >> ~/.pypirc
     - python setup.py check sdist bdist_wheel
-    - twine upload --repository testpypi dist/*
+    - twine upload --repository pypi dist/*
     - echo "" > ~/.pypirc && rm ~/.pypirc
   only:
     - tags
