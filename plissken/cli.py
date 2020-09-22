@@ -50,9 +50,9 @@ def generate(module_root, out, format, template_dir, template):
             render = render_template(f"{format}.template", data=prettyDoc(document))
             save_file(render, document.export_file_path)
             for package in document.sub_packages:
-                return recursive_render(package)
+                recursive_render(package)
             for module in document.modules:
-                return recursive_render(module)
+                recursive_render(module)
             return
         if isinstance(document, plissken.documents.module.ModuleDocument):
             render = render_template(f"{format}.template", data=prettyDoc(document))
