@@ -1,5 +1,5 @@
 {% macro create_arg(arg) -%}
-**{{ arg.name }}**{{ "`: {}`".format(arg.annotation) if arg.annotation}}{{ "=_{}_".format(arg.default)|replace("'","") if arg.default }}
+**{{ arg.name }}**{{ "`: {}`".format(arg.annotation) if arg.annotation}}{{ "=*{}*".format(arg.default)|replace("'","") if arg.default }}
 {%- endmacro %}
 {% macro gen_arglist(arglist) -%}
 {% set args = [] %}{% for arg in arglist %}{% do args.append(create_arg(arg)) %}{% endfor %}{{ args|join(', ') }}
