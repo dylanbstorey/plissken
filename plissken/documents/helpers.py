@@ -53,8 +53,12 @@ def get_documented_variables(node):
                 redbaron.nodes.NameNode,
             ),
         ):
-            if isinstance(node[ix + 1], redbaron.nodes.StringNode):
-                rv.append((node[ix], node[ix + 1]))
+            try:
+                if isinstance(node[ix + 1], redbaron.nodes.StringNode):
+                    rv.append((node[ix], node[ix + 1]))
+            except IndexError:
+                pass
+
     return rv
 
     # return ClassDocument()
